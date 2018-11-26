@@ -1,5 +1,6 @@
 package tutorials.amit.maven;
 
+import org.json.JSONArray;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
@@ -34,7 +35,7 @@ public class LocalTest
         this.driver.get("http://phptest.local/test1.php");
     }
 
-    @Test
+    /*@Test
     public void testDiv()
     {
         ////*[@id="test-div"]
@@ -57,27 +58,65 @@ public class LocalTest
     {
         List<WebElement> li_All = this.driver.findElements(By.xpath("//*[@id=\"test-ul\"]/li"));
         Assert.assertTrue(li_All.size() > 0);
-    }
+    }*/
 
     @Test
-    public void assertTrue123()
+    public void assertTrue()
     {
-        Assert.assertTrue(false);
+        Assert.assertTrue(true);
     }
 
-    /*@Test
+    @Test(dependsOnMethods = {"assertTrue"})
     public void testJson()
     {
-        String str = "{ \"name\": \"Alice\", \"age\": 20 }";
+        String str = "{\"id\":1,\"name\":\"test_page_1\",\"title\":\"Test Page1\",\"url\":\"http://phptest.local/test1.php\",\"elements\":[{\"displayName\":\"Element 1\",\"uniqueId\":\"element_1\",\"type\":\"div\",\"xpath\":\"//*[@id=\\\"test-div1\\\"]\",\"testFor\":\"equality\",\"expectedValue\":\"Test 1\"},{\"displayName\":\"Element 2\",\"uniqueId\":\"element_2\",\"type\":\"div\",\"xpath\":\"//*[@id=\\\"test-div2\\\"]\",\"testFor\":\"equality\",\"expectedValue\":\"Test 2\"}]}";
         try {
             JSONObject obj = new JSONObject(str);
-            String n = obj.getString("name");
-            int a = obj.getInt("age");
-            System.out.println(n + " " + a);
+            String pageName = obj.getString("name");
+            String pageTitle = obj.getString("title");
+            String pageUrl = obj.getString("url");
+            JSONArray elements = obj.getJSONArray("elements");
+
+            System.out.println(pageName + " => " + pageTitle + " => " + pageUrl);
+
+            for(int i = 0; i < elements.length(); i++) {
+                JSONObject jsonObject = elements.getJSONObject(i);
+                //String elementName = jsonObject.getString("id");
+                //String elementDisplayName = jsonObject.getString("displayName");
+                String testFor = jsonObject.getString("testFor");
+                String xPath = jsonObject.getString("xpath");
+
+                //String elementType = jsonObject.getString("type");
+
+                /*switch(elementType.toUpperCase()) {
+                    case "DIV":
+                    case "SPAN":
+
+                }*/
+
+                String elementXpathValue = this.driver.findElement(By.xpath(xPath)).getText();
+                String expectedValue = jsonObject.getString("expectedValue");
+                switch(testFor.toUpperCase()) {
+                    case "EQUALITY":
+                        Assert.assertEquals(elementXpathValue, expectedValue);
+                        break;
+                    default:
+                        break;
+                }
+
+                //System.out.println(elementName + " => " + elementDisplayName);
+            }
+
+            //System.out.println(name + " " + displayName);
         } catch(JSONException e) {
             System.out.println(e.getMessage());
         }
-    }*/
+    }
+
+
+    
+
+
 
     @AfterMethod
     public void takeScreenshot(ITestResult result)
@@ -89,7 +128,7 @@ public class LocalTest
             System.out.println("======================================");
         }*/
 
-        if(ITestResult.FAILURE==result.getStatus()){
+        /*if(ITestResult.FAILURE==result.getStatus()){
             try {
                 TakesScreenshot screenshot = (TakesScreenshot)this.driver;
                 File src = screenshot.getScreenshotAs(OutputType.FILE);
@@ -99,7 +138,9 @@ public class LocalTest
             } catch(Exception e) {
                 System.out.println("Exception while taking screenshot "+e.getMessage());
             }
-        }
+        }*/
+
+        System.out.println("Test");
     }
 
     @AfterTest
